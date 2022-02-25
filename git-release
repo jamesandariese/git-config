@@ -99,7 +99,7 @@ if [ $RELEASE_HOTFIX = yes ];then
     echo " TO ROLLBACK: git tag -d v$RELEASE_VERSION;git reset --hard HEAD~1"
     echo " TO SEND:
     echo "   
-    echo "    git push -u origin release/v$RELEASE_VERSION"
+    echo "    git push origin $CURRENT_BRANCH v$RELEASE_VERSION"
     echo
     exit 0
     # EXIT AT THE END OF SPECIAL CASE FOR HOTFIX
@@ -156,8 +156,8 @@ git checkout main
 set +x
 echo "!!! Release not pushed automatically."
 echo " TO ROLLBACK: git tag -d v$RELEASE_VERSION;git branch -D $BRANCH"
-echo " TO SEND:
-echo "   
+echo " TO SEND:"
+echo
 echo "    git push -u origin $BRANCH v$RELEASE_VERSION"
 echo
 
