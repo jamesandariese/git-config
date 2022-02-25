@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -e
+
+FROMDIR="$(dirname "$0")"
+
+if [ s"$GIT_PREFIX" != s ];then
+    echo "run this from the root of your git repo"
+    exit 1
+fi
+
+FULLNAME="$(git config user.name)"
+export FULLNAME
+YEAR="$(date +%Y)"
+export YEAR
+
+gomplate --input-dir "$FROMDIR/template.tmpl" --output-dir .

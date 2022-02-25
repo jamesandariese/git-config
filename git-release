@@ -1,0 +1,142 @@
+#!/bin/bash
+
+set -e
+
+RELEASE_MAJOR=no
+RELEASE_MINOR=no
+RELEASE_HOTFIX=no
+MAKE_PREPARE_RELEASE=yes
+DEBUG=no
+
+usage() { echo "Usage: $0 [-x|-y|-z commit-to-pick]
+    -x  Release a major version
+    -y  Release a minor version
+    -z  Release a hotfix version using a cherry-pick
+    -K  Do not run make prepare-release during release process
+    -h  This help
+" 1>&2; exit 1; }
+
+while getopts "Kxyz:D" o; do
+    case "${o}" in
+        K)  MAKE_PREPARE_RELEASE=no
+            ;;
+        D)  DEBUG=yes
+            ;;
+        x)
+            RELEASE_MAJOR=yes
+            ;;
+        y)
+            RELEASE_MINOR=yes
+            ;;
+        z)
+            RELEASE_HOTFIX=yes
+            HOTFIX_PICK="${OPTARG}"
+            ;;
+        *)
+            usage
+            ;;
+    esac
+done
+shift $((OPTIND-1))
+if [ $DEBUG = yes ];then
+    set -x
+fi
+if [ $MAKE_PREPARE_RELEASE = yes ];then
+    if ! make -n prepare-release 2> /dev/null;then
+        echo "Make prepare-release failed in dry-run and -K not specified.  Exiting early." 1>&2
+        exit 3
+    fi
+fi
+
+if [ $RELEASE_MAJOR$RELEASE_MINOR$RELEASE_HOTFIX = nonono ];then
+    # default to release minor
+    RELEASE_MINOR=yes
+fi
+if [ $RELEASE_MAJOR = yes ];then
+    if [ $RELEASE_MINOR = yes ] || [ $RELEASE_HOTFIX = yes ];then usage;else
+    : Release type is major
+    RELEASE_TYPE=major
+    fi
+fi
+if [ $RELEASE_MINOR = yes ];then
+    if [ $RELEASE_MAJOR = yes ] || [ $RELEASE_HOTFIX = yes ];then usage;else
+        : Release type is minor
+        RELEASE_TYPE=minor
+    fi
+fi
+if [ $RELEASE_HOTFIX = yes ];then
+    : Release type is hotfix
+    # SPECIAL CASE FOR HOTFIX
+    if [ $RELEASE_MAJOR = yes ] || [ $RELEASE_MINOR  = yes ];then usage;fi
+
+    if ! git log --format=oneline -n 1 "$HOTFIX_PICK" &> /dev/null ;then echo "commit to cherry-pick does not exist"; exit 1;fi
+    
+    CURRENT_BRANCH="$(git branch --show-current)"
+    CURRENT_VERSION="${CURRENT_BRANCH#release/v}"
+    if [ s"$CURRENT_BRANCH" = s"$CURRENT_VERSION" ];then echo "must run from release branch"; exit 1;fi
+    
+    MAJOR=${CURRENT_VERSION%.*}
+    MINOR=${CURRENT_VERSION#*.}
+    
+    LATEST_VERSION="$(git branch -a --format '%(refname:short)' | sed -e 's#^origin##' | grep -E '^release/v'"$MAJOR"'[.]'"$MINOR"'$' | sort -V | tail -1)"
+    HOTFIX="$(git tag | awk -v M="$MAJOR" -v m="$MINOR" -F '[v.]' '/^v[0-9]+[.][0-9]+[.][0-9]+$/ && $2==M && $3==m {if ($4 > v) v=$4} END {print v+1}')"
+    set -x
+    git cherry-pick -n "$HOTFIX_PICK"
+    export RELEASE_VERSION=v$MAJOR.$MINOR.$HOTFIX
+    [ $MAKE_PREPARE_RELEASE = yes ] && make prepare-release
+
+    git commit --allow-empty -m "Hotfix $RELEASE_VERSION"$'\n'$'\n'"$(git log --no-walk "$HOTFIX_PICK" --format='%h %s')"
+    git tag -a -m "Hotfix $RELEASE_VERSION" "$RELEASE_VERSION"
+    exit 0
+    # EXIT AT THE END OF SPECIAL CASE FOR HOTFIX
+fi
+
+if [ x"$(git branch --show-current)" != xmain ];then echo "must run from main branch";exit 1;fi
+
+LATEST_VERSION="$(git branch -a --format '%(refname:short)' | sed -e 's#^origin/##' | grep -E '^release/v[0-9]+[.][0-9]+$' | sort -V | tail -1)"
+LATEST_VERSION="${LATEST_VERSION#release/v}"
+
+# all components of LATEST_VERSION are now numbers and we've
+# further guaranteed that there are two components.
+
+MAJOR=${LATEST_VERSION%.*}
+MINOR=${LATEST_VERSION#*.}
+[ s"$MAJOR" = s"" ] && MAJOR=0
+# this will be set to 0 for major and incremented for minor.  default to -1 so that it will become 0 in a minor release
+[ s"$MINOR" = s"" ] && MINOR=-1
+if [ s"$RELEASE_TYPE" = smajor ];then
+    # if we're releasing a major version, we'll start at 1.0.0 no matter whether
+    # there was a previous release or not.  For this, we can simply increment MAJOR.
+    MAJOR=$(( MAJOR + 1 ))
+    MINOR=0
+    HOTFIX=0
+elif [ s"$RELEASE_TYPE" = sminor ];then
+    # for minor releases, we want to start at 0.0.1 (implying that the first
+    # version is a hotfix on an unreleased 0.0.0) but for all other versions,
+    # hotfix starts at 0 because it's actually a hotfix of a release and 0
+    # for hotfix implies that there have been none.
+
+    # this is either -1 by default or a real number which should be incremented
+    # it's never < 1 if it was set at all.
+    MINOR=$(( MINOR + 1 ))
+
+    if [ $MAJOR = 0 ] && [ $MINOR = 0 ];then
+        # MAJOR and MINOR stay the same for 0.0.1
+        HOTFIX=1
+    else
+        # MAJOR stays the same
+        HOTFIX=0
+    fi
+else
+    echo "UNEXPECTED RELEASE TYPE -- this is a bug, please report it."
+    exit 1
+fi
+export RELEASE_VERSION="v$MAJOR.$MINOR.$HOTFIX"
+BRANCH="release/v$MAJOR.$MINOR"
+set -x
+git checkout -b "$BRANCH"
+[ $MAKE_PREPARE_RELEASE = yes ] && make prepare-release
+git commit -m "Release $RELEASE_VERSION" --allow-empty
+git tag -a -m "Release $RELEASE_VERSION" "$RELEASE_VERSION"
+#git push -u origin "$RELEASE_VERSION" "$BRANCH"
+git checkout main
