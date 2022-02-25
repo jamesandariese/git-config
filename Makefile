@@ -5,6 +5,8 @@ RELPATH=$(shell realpath .)
 all:
 always-build:
 
+prepare-release:
+
 install:
 	git config --global alias.release "!$(RELPATH)/git-release"
 	git config --global alias.release-minor "!$(RELPATH)/git-release -y"
