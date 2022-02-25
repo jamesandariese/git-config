@@ -18,3 +18,5 @@ install:
 	git config --global alias.release-hotfix "!$(RELPATH)/git-release -z"
 	git config --global alias.template "!$(RELPATH)/git-template"
 	git config --global init.defaultBranch "main"
+	git config --global push.default "current"
+	git config --global followTags "true"
