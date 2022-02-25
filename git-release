@@ -93,6 +93,14 @@ if [ $RELEASE_HOTFIX = yes ];then
 
     git commit --allow-empty -m "Hotfix $RELEASE_VERSION"$'\n'$'\n'"$(git log --no-walk "$HOTFIX_PICK" --format='%h %s')"
     git tag -a -m "Hotfix $RELEASE_VERSION" "v$RELEASE_VERSION"
+
+    set +x
+    echo "!!! Release not pushed automatically."
+    echo " TO ROLLBACK: git tag -d v$RELEASE_VERSION;git reset --hard HEAD~1"
+    echo " TO SEND:
+    echo "   
+    echo "    git push -u origin release/v$RELEASE_VERSION"
+    echo
     exit 0
     # EXIT AT THE END OF SPECIAL CASE FOR HOTFIX
 fi
@@ -144,5 +152,12 @@ git checkout -b "$BRANCH"
 [ $MAKE_PREPARE_RELEASE = yes ] && make prepare-release
 git commit -m "Release $RELEASE_VERSION" --allow-empty
 git tag -a -m "Release $RELEASE_VERSION" "v$RELEASE_VERSION"
-#git push -u origin "$RELEASE_VERSION" "$BRANCH"
 git checkout main
+set +x
+echo "!!! Release not pushed automatically."
+echo " TO ROLLBACK: git tag -d v$RELEASE_VERSION;git branch -D $BRANCH"
+echo " TO SEND:
+echo "   
+echo "    git push -u origin $BRANCH v$RELEASE_VERSION"
+echo
+
