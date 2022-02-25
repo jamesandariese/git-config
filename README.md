@@ -45,6 +45,8 @@ These commands use the abbreviations x for major, y for minor, and z for hotfix.
     * will tag a new release with an incremented major from the latest
       discovered major (consults local branches)
 
+#### An example repository using `git-release`
+
 ```bash
 git init
 
@@ -54,11 +56,11 @@ git commit --allow-empty -m 'initial commit'
 # use our templater!
 git template
 
-git add README.md LICENSE
+git add *
 git commit -m "initial import"
 
 # release v0.0.1
-# contains the readme and license
+# contains template files only
 git release
 
 date > test.txt
@@ -66,7 +68,7 @@ git add test.txt
 git commit -m 'add a test file'
 
 # release v0.1.0
-# contains readme, license, and test file
+# contains template files and test file
 git release
 
 # let's use a feature branch

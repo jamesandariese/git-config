@@ -1,8 +1,12 @@
 .PHONY: all always-build
 
-RELPATH=$(shell realpath .)
+RELPATH := $(shell realpath .)
 
-all:
+all: version.txt
 always-build:
 
-prepare-release:
+version.txt: version.txt.tmpl always-build
+	gomplate < version.txt.tmpl > version.txt
+	git add version.txt
+
+prepare-release: version.txt

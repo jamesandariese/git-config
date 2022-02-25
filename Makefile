@@ -1,6 +1,6 @@
 .PHONY: all always-build
 
-RELPATH=$(shell realpath .)
+RELPATH := $(shell realpath .)
 
 all: version.txt
 always-build:
@@ -19,4 +19,8 @@ install:
 	git config --global alias.template "!$(RELPATH)/git-template"
 	git config --global init.defaultBranch "main"
 	git config --global push.default "current"
-	git config --global followTags "true"
+	git config --global push.followTags "true"
+
+test: always-build
+	echo $(eval $@_TAG := $(shell docker build -q -f test/Dockerfile . ) )
+	docker run -ti $($@_TAG)

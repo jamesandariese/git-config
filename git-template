@@ -26,7 +26,15 @@ if [ s"$GIT_PREFIX" != s ];then
     exit 1
 fi
 
+set +e # let's do some custom error handling here
 FULLNAME="$(git config user.name)"
+if [ s"$FULLNAME" = s ];then
+    echo "This command requires a configured git."
+    echo "git config --global user.name <YOURNAMEHERE>"
+    echo "git config --global user.email <YOUREMAILHERE>"
+    exit 4
+fi
+set -e
 export FULLNAME
 YEAR="$(date +%Y)"
 export YEAR
