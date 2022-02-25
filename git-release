@@ -2,22 +2,28 @@
 
 set -e
 
+SCRIPT_PATH="$(dirname "$0")"
+
 RELEASE_MAJOR=no
 RELEASE_MINOR=no
 RELEASE_HOTFIX=no
 MAKE_PREPARE_RELEASE=yes
 DEBUG=no
 
-usage() { echo "Usage: $0 [-x|-y|-z commit-to-pick]
+usage() { echo "Usage: $0 [-v] [-K] [-x|-y|-z commit-to-pick]
     -x  Release a major version
     -y  Release a minor version
     -z  Release a hotfix version using a cherry-pick
     -K  Do not run make prepare-release during release process
+    -v  Print version and exit
     -h  This help
 " 1>&2; exit 1; }
 
-while getopts "Kxyz:D" o; do
+while getopts "vKxyz:D" o; do
     case "${o}" in
+        v)  cat "$SCRIPT_PATH/version.txt"
+            exit 0
+            ;;
         K)  MAKE_PREPARE_RELEASE=no
             ;;
         D)  DEBUG=yes

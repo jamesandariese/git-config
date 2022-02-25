@@ -2,7 +2,24 @@
 
 set -e
 
-FROMDIR="$(dirname "$0")"
+SCRIPT_PATH="$(dirname "$0")"
+
+usage() { echo "Usage: $0 [-v]
+    -v  Print version and exit
+    -h  This help
+" 1>&2; exit 1; } 
+
+while getopts "v" o; do
+    case "${o}" in
+        v)  
+            cat "$SCRIPT_PATH/version.txt"
+            exit 0
+            ;;
+        *)
+            usage
+            ;;
+    esac
+done
 
 if [ s"$GIT_PREFIX" != s ];then
     echo "run this from the root of your git repo"
@@ -14,4 +31,4 @@ export FULLNAME
 YEAR="$(date +%Y)"
 export YEAR
 
-gomplate --input-dir "$FROMDIR/template.tmpl" --output-dir .
+gomplate --input-dir "$SCRIPT_PATH/template.tmpl" --output-dir .
