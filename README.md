@@ -6,7 +6,7 @@ Git configs for standardized git workflowing
 
 ### Prerequisites
 
-* [`gomplate`][1]
+* [`gomplate`](https://docs.gomplate.ca/installing/)
 
 ### Installation
 
@@ -111,4 +111,4 @@ git release-major  # or git release -x
 
 ### References
 
-[gomplate]: https://docs.gomplate.ca/installing/
+[gomplate]: 
