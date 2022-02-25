@@ -109,6 +109,22 @@ git checkout main
 git release-major  # or git release -x
 ```
 
+### `git-alias`
+
+#### An example alias using `git-alias`
+
+```bash
+git alias --global testalias 'echo "oijwef $1"' 'echo "test $5"' 'echo "fred $2"'
+git testalias a b c d e
+```
+
+This produces:
+```
+oijwef a
+test e
+fred b
+```
+
 ### References
 
 [gomplate]: 
