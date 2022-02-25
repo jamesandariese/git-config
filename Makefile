@@ -24,6 +24,8 @@ setup-configs:
 	git config --global init.defaultBranch "main"
 	git config --global push.default "current"
 	git config --global push.followTags "true"
+	git config --global commit.gpgSign "true"
+	git config --global tag.gpgSign "true"
 
 install: install-release install-template setup-configs
 
