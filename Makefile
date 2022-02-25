@@ -20,6 +20,9 @@ install-release:
 install-template:
 	git config --global alias.template "!$(RELPATH)/git-template"
 
+install-alias:
+	git config --global alias.alias "!$(RELPATH)/git-alias"
+
 setup-configs:
 	git config --global init.defaultBranch "main"
 	git config --global push.default "current"
@@ -27,7 +30,7 @@ setup-configs:
 	git config --global commit.gpgSign "true"
 	git config --global tag.gpgSign "true"
 
-install: install-release install-template setup-configs
+install: install-release install-template setup-configs install-alias
 
 test: always-build
 	echo $(eval $@_TAG := $(shell docker build -q -f test/Dockerfile . ) )

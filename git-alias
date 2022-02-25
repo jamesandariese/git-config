@@ -1,0 +1,44 @@
+#!/bin/bash
+
+usage() {
+echo 'git-alias [git-config-options] ALIASNAME shell-cmd1 shell-cmd2 ...
+
+each shell-cmd runs separately and in `bash -c` but each is also passed the args to the alias.
+
+$ git alias --global testalias '"'"'echo "oijwef $1"'"'"' '"'"'echo "test $5"'"'"' '"'"'echo "fred $2"'"'"'
+$ git testalias a b c d e
+oijwef a
+test e
+fred b
+'
+}
+
+ARGS=""
+while [ "$1" != "${1#-}" ];do
+    if [ "$1" = "-h" ];then
+        1>&2 usage
+        exit 0
+    fi
+    if [ "$1" = "--" ];then
+        shift
+        break
+    fi
+    ARGS="$ARGS $(printf %q "$1")"
+    shift
+done
+ANAME="$1"
+shift
+
+# on the next line, there is a single string which is made of both a '' and a "".  they must be touching!
+git config $ARGS alias."$ANAME" '!ARGS="$(printf "%q " "$@")";while [ $# -gt 0 ];do shift;done;'"$(printf "bash -c %q xxx \$ARGS;" "$@")"
+if [ $? -ne 0 ];then
+    1>&2 echo "------------------"
+    1>&2 echo "git config failed."
+    1>&2 echo "------------------"
+    usage
+    exit 1
+fi
+
+while [ $# -gt 0 ];do
+    shift
+done
