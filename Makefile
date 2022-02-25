@@ -11,15 +11,21 @@ version.txt: version.txt.tmpl always-build
 
 prepare-release: version.txt
 
-install:
+install-release:
 	git config --global alias.release "!$(RELPATH)/git-release"
 	git config --global alias.release-minor "!$(RELPATH)/git-release -y"
 	git config --global alias.release-major "!$(RELPATH)/git-release -x"
 	git config --global alias.release-hotfix "!$(RELPATH)/git-release -z"
+
+install-template:
 	git config --global alias.template "!$(RELPATH)/git-template"
+
+setup-configs:
 	git config --global init.defaultBranch "main"
 	git config --global push.default "current"
 	git config --global push.followTags "true"
+
+install: install-release install-template setup-configs
 
 test: always-build
 	echo $(eval $@_TAG := $(shell docker build -q -f test/Dockerfile . ) )
