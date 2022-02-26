@@ -39,4 +39,8 @@ export FULLNAME
 YEAR="$(date +%Y)"
 export YEAR
 
-gomplate --input-dir "$SCRIPT_PATH/template.tmpl" --output-dir .
+TMPLDIR="$SCRIPT_PATH/template.tmpl"
+# template-helper (used in find below) uses TMPLDIR to strip it from
+# the beginning of find output.
+
+find "$TMPLDIR" '(' -type d -o -type f ')' -exec "$SCRIPT_PATH"/template-helper "$TMPLDIR" {} \;

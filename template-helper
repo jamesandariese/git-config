@@ -1,0 +1,17 @@
+#!/bin/bash
+
+SRC="$2"
+DEST="${2#$1/}"
+
+if [ -d "$2" ];then
+  mkdir -p "$DEST"
+else
+  if [ -e "$DEST" ];then
+    echo "Skipping $DEST which already exists" 1>&2
+    exit 0
+  fi
+  gomplate < "$SRC" > "$DEST"
+  if [ -x "$SRC" ];then
+    chmod +x "$DEST"
+  fi
+fi

@@ -10,3 +10,7 @@ version.txt: version.txt.tmpl always-build
 	git add version.txt
 
 prepare-release: version.txt
+
+test:
+	echo "Add tests" 1>&2
+	false

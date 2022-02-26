@@ -119,12 +119,13 @@ git testalias a b c d e
 ```
 
 This produces:
-```
+
+```text
 oijwef a
 test e
 fred b
 ```
 
-### References
+## License
 
-[gomplate]: 
+See [LICENSE](./LICENSE) file.
