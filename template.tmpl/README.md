@@ -1,7 +1,6 @@
 # `command`
 
 Your project's description
-{{ end -}}
 
 ## License
 

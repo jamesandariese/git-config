@@ -23,12 +23,18 @@ install-template:
 install-alias:
 	git config --global alias.alias "!$(RELPATH)/git-alias"
 
-setup-configs:
+setup-configs: setup-gpg-configs
 	git config --global init.defaultBranch "main"
 	git config --global push.default "current"
 	git config --global push.followTags "true"
+
+setup-gpg-configs:
+ifeq ($(wildcard ~/.gnupg),)
+	@echo "no ~/.gnupg found.  skipping gnupg config."
+else
 	git config --global commit.gpgSign "true"
 	git config --global tag.gpgSign "true"
+endif
 
 install: install-release install-template setup-configs install-alias
 

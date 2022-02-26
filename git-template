@@ -43,4 +43,4 @@ TMPLDIR="$SCRIPT_PATH/template.tmpl"
 # template-helper (used in find below) uses TMPLDIR to strip it from
 # the beginning of find output.
 
-find "$TMPLDIR" '(' -type d -o -type f ')' -exec "$SCRIPT_PATH"/template-helper "$TMPLDIR" {} \;
+find "$TMPLDIR" '(' -type d -o -type f ')' -print0 | xargs -n1 -0 "$SCRIPT_PATH"/template-helper "$TMPLDIR"

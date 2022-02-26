@@ -10,7 +10,7 @@ else
     echo "Skipping $DEST which already exists" 1>&2
     exit 0
   fi
-  gomplate < "$SRC" > "$DEST"
+  gomplate < "$SRC" > "$DEST" || exit 1
   if [ -x "$SRC" ];then
     chmod +x "$DEST"
   fi
