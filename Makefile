@@ -12,28 +12,28 @@ version.txt: version.txt.tmpl always-build
 prepare-release: version.txt
 
 install-release:
-	git config --global alias.release "!$(RELPATH)/git-release"
-	git config --global alias.release-minor "!$(RELPATH)/git-release -y"
-	git config --global alias.release-major "!$(RELPATH)/git-release -x"
-	git config --global alias.release-hotfix "!$(RELPATH)/git-release -z"
+	flock $(CURDIR) git config --global alias.release "!$(RELPATH)/git-release"
+	flock $(CURDIR) git config --global alias.release-minor "!$(RELPATH)/git-release -y"
+	flock $(CURDIR) git config --global alias.release-major "!$(RELPATH)/git-release -x"
+	flock $(CURDIR) git config --global alias.release-hotfix "!$(RELPATH)/git-release -z"
 
 install-template:
-	git config --global alias.template "!$(RELPATH)/git-template"
+	flock $(CURDIR) git config --global alias.template "!$(RELPATH)/git-template"
 
 install-alias:
-	git config --global alias.alias "!$(RELPATH)/git-alias"
+	flock $(CURDIR) git config --global alias.alias "!$(RELPATH)/git-alias"
 
 setup-configs: setup-gpg-configs
-	git config --global init.defaultBranch "main"
-	git config --global push.default "current"
-	git config --global push.followTags "true"
+	flock $(CURDIR) git config --global init.defaultBranch "main"
+	flock $(CURDIR) git config --global push.default "current"
+	flock $(CURDIR) git config --global push.followTags "true"
 
 setup-gpg-configs:
 ifeq ($(wildcard ~/.gnupg),)
 	@echo "no ~/.gnupg found.  skipping gnupg config."
 else
-	git config --global commit.gpgSign "true"
-	git config --global tag.gpgSign "true"
+	flock $(CURDIR) git config --global commit.gpgSign "true"
+	flock $(CURDIR) git config --global tag.gpgSign "true"
 endif
 
 install: install-release install-template setup-configs install-alias
