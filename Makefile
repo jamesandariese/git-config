@@ -27,6 +27,7 @@ setup-configs: setup-gpg-configs
 	flock $(CURDIR) git config --global init.defaultBranch "main"
 	flock $(CURDIR) git config --global push.default "current"
 	flock $(CURDIR) git config --global push.followTags "true"
+	flock $(CURDIR) git config --global status.submoduleSummary 1
 
 setup-gpg-configs:
 ifeq ($(wildcard ~/.gnupg),)
