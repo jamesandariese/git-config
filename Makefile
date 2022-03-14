@@ -43,6 +43,8 @@ else
 	flock $(CURDIR) git config --global commit.gpgSign "true"
 	flock $(CURDIR) git config --global tag.gpgSign "true"
 endif
+	flock $(CURDIR) git config --global pretty.james '%C(auto)%h %s %C(green)%d%n        %C(black)%ae/%ce (%G? %GS)'
+	flock $(CURDIR) git config --global format.pretty james
 
 install: install-release install-template setup-configs install-alias
 
