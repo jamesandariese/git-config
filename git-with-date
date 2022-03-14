@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -e
+
+d="$(git parsedate "$1")"
+shift
+export GIT_COMMITTER_DATE="$d"
+export GIT_AUTHOR_DATE="$d"
+eval "$@"

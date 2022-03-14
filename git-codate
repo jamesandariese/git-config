@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -e
+
+d="$(git parsedate "$1")"
+shift
+git checkout "$(git rev-list -n1 --first-parent --before="$d" HEAD|grep . || git rev-list -n1 --before="$d" HEAD)"

@@ -23,6 +23,13 @@ install-template:
 install-alias:
 	flock $(CURDIR) git config --global alias.alias "!$(RELPATH)/git-alias"
 
+install-date-helpers:
+	flock $(CURDIR) git config --global alias.cd "!$(RELPATH)/git-changedate"
+	flock $(CURDIR) git config --global alias.changedate "!$(RELPATH)/git-changedate"
+	flock $(CURDIR) git config --global alias.parsedate "!$(RELPATH)/git-parsedate"
+	flock $(CURDIR) git config --global alias.codate "!$(RELPATH)/git-codate"
+	flock $(CURDIR) git config --global alias.with-date "!$(RELPATH)/git-with-date"
+
 setup-configs: setup-gpg-configs
 	flock $(CURDIR) git config --global init.defaultBranch "main"
 	flock $(CURDIR) git config --global push.default "current"

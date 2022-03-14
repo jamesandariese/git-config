@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -e 
+
+arg1="$1"
+shift
+
+if which gdate &> /dev/null;then
+  gdate -d "$arg1"
+else
+  date -d "$arg1"
+fi

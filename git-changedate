@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -e
+
+d="$(git parsedate "$1")"
+shift
+GIT_COMMITTER_DATE="$d" git commit --amend --allow-empty --date "$d" --no-edit
