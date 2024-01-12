@@ -30,7 +30,7 @@ ANAME="$1"
 shift
 
 # on the next line, there is a single string which is made of both a '' and a "".  they must be touching!
-git config $ARGS alias."$ANAME" '!ARGS="$(printf "%q " "$@")";while [ $# -gt 0 ];do shift;done;set -e;'"$(printf "bash -c %q xxx \$ARGS;" "$@")"
+git config $ARGS alias."$ANAME" '!ARGS="$(env printf "%q " "$@")";while [ $# -gt 0 ];do shift;done;set -e;'"$(env printf "bash -c %q xxx \$ARGS;" "$@")"
 if [ $? -ne 0 ];then
     1>&2 echo "------------------"
     1>&2 echo "git config failed."
